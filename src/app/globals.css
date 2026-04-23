@@ -7,36 +7,38 @@
 
 @layer base {
   :root {
-    color-scheme: light;
+    color-scheme: dark;
   }
 
   html {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
+    background-color: #09090B;
   }
 
   body {
-    background-color: #F8FAFC;
-    color: #020617;
+    background-color: #09090B;
+    color: #FAFAF9;
     font-family: "General Sans", system-ui, sans-serif;
     line-height: 1.6;
+    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: "Satoshi", system-ui, sans-serif;
     font-weight: 700;
-    letter-spacing: -0.02em;
-    color: #0F172A;
+    letter-spacing: -0.025em;
+    color: #FAFAF9;
   }
 
   ::selection {
-    background-color: #0F172A;
-    color: #F8FAFC;
+    background-color: #EAB308;
+    color: #09090B;
   }
 
   :focus-visible {
-    outline: 2px solid #CA8A04;
+    outline: 2px solid #EAB308;
     outline-offset: 2px;
     border-radius: 4px;
   }
@@ -54,28 +56,63 @@
 }
 
 @layer components {
-  .hairline {
-    border-top: 1px solid #E2E8F0;
-  }
-
   .eyebrow {
     font-family: "JetBrains Mono", ui-monospace, monospace;
     font-size: 0.75rem;
     font-weight: 500;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #475569;
+    color: #A1A1AA;
+  }
+
+  .eyebrow-gold {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #EAB308;
   }
 
   .number-display {
     font-family: "Satoshi", system-ui, sans-serif;
     font-variant-numeric: tabular-nums;
     font-weight: 900;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.035em;
   }
 
-  .prose-editorial p {
-    color: #334155;
-    max-width: 65ch;
+  .grid-overlay {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .card-dark {
+    background: linear-gradient(180deg, rgba(24, 24, 27, 0.8) 0%, rgba(17, 17, 20, 0.8) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(8px);
+  }
+
+  .divider-glow {
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(234, 179, 8, 0.4),
+      transparent
+    );
+    height: 1px;
+  }
+}
+
+@layer utilities {
+  .mask-fade-bottom {
+    mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+  }
+
+  .mask-radial-fade {
+    mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
   }
 }

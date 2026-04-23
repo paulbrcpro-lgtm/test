@@ -32,14 +32,16 @@ export function Navbar() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        "sticky top-0 z-40 w-full border-b border-transparent bg-background/80 backdrop-blur-md transition-colors duration-300",
-        scrolled && "border-ink-200",
+        "sticky top-0 z-40 w-full transition-all duration-300",
+        scrolled
+          ? "border-b border-ink-800/80 bg-surface/70 backdrop-blur-xl"
+          : "border-b border-transparent",
       )}
     >
       <div className="container mx-auto flex h-16 items-center justify-between">
         <Link
           href="/"
-          className="flex items-center gap-2 text-ink-900 font-sans font-bold tracking-tight text-lg"
+          className="flex items-center gap-2.5 text-ink-50 font-sans font-bold tracking-tight text-[1.05rem]"
           aria-label={`${siteConfig.name} — Accueil`}
         >
           <LogoMark />
@@ -47,7 +49,7 @@ export function Navbar() {
         </Link>
 
         <nav aria-label="Navigation principale" className="hidden md:block">
-          <ul className="flex items-center gap-1">
+          <ul className="flex items-center gap-1 rounded-full border border-ink-800 bg-ink-900/60 p-1 backdrop-blur-xl">
             {nav.map((item) => {
               const active = pathname === item.href;
               return (
@@ -55,21 +57,21 @@ export function Navbar() {
                   <Link
                     href={item.href}
                     className={cn(
-                      "relative px-4 py-2 text-sm font-medium transition-colors",
+                      "relative inline-flex items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
                       active
-                        ? "text-ink-900"
-                        : "text-ink-600 hover:text-ink-900",
+                        ? "text-ink-950"
+                        : "text-ink-200 hover:text-ink-50",
                     )}
                     aria-current={active ? "page" : undefined}
                   >
-                    {item.label}
                     {active && (
                       <motion.span
-                        layoutId="nav-underline"
-                        className="absolute inset-x-3 -bottom-px h-[2px] bg-gold"
+                        layoutId="nav-pill"
+                        className="absolute inset-0 rounded-full bg-gold"
                         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                       />
                     )}
+                    <span className="relative">{item.label}</span>
                   </Link>
                 </li>
               );
@@ -78,7 +80,7 @@ export function Navbar() {
         </nav>
 
         <div className="hidden md:block">
-          <Button asChild variant="primary" size="sm">
+          <Button asChild variant="outline" size="sm">
             <Link href="/contact">Audit gratuit</Link>
           </Button>
         </div>
@@ -86,7 +88,7 @@ export function Navbar() {
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
-          className="md:hidden inline-flex h-10 w-10 items-center justify-center text-ink-900 cursor-pointer"
+          className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-full border border-ink-800 bg-ink-900/60 text-ink-50 cursor-pointer"
           aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
           aria-expanded={open}
         >
@@ -95,7 +97,7 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div className="md:hidden border-t border-ink-200 bg-background">
+        <div className="md:hidden border-t border-ink-800 bg-surface/95 backdrop-blur-xl">
           <nav aria-label="Navigation mobile" className="container mx-auto py-4">
             <ul className="flex flex-col">
               {nav.map((item) => {
@@ -105,10 +107,10 @@ export function Navbar() {
                     <Link
                       href={item.href}
                       className={cn(
-                        "block border-b border-ink-100 py-3 text-base",
+                        "block border-b border-ink-800 py-3 text-base",
                         active
-                          ? "text-ink-900 font-medium"
-                          : "text-ink-600",
+                          ? "text-gold font-medium"
+                          : "text-ink-200",
                       )}
                       aria-current={active ? "page" : undefined}
                     >
@@ -132,21 +134,36 @@ export function Navbar() {
 
 function LogoMark() {
   return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <rect x="2" y="2" width="20" height="20" stroke="#0F172A" strokeWidth="1.5" />
-      <path
-        d="M7 14.5L10.5 11L14 13.5L17 9"
-        stroke="#CA8A04"
-        strokeWidth="1.75"
-        strokeLinecap="square"
-      />
-    </svg>
+    <span className="relative inline-flex h-8 w-8 items-center justify-center">
+      <span className="absolute inset-0 rounded-lg bg-gold/20 blur-md" aria-hidden="true" />
+      <svg
+        width="28"
+        height="28"
+        viewBox="0 0 28 28"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+        className="relative"
+      >
+        <rect
+          x="2"
+          y="2"
+          width="24"
+          height="24"
+          rx="6"
+          fill="#0F0F11"
+          stroke="#EAB308"
+          strokeWidth="1.25"
+        />
+        <path
+          d="M8 17L12 12.5L16 15.5L20 10"
+          stroke="#EAB308"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <circle cx="20" cy="10" r="1.5" fill="#EAB308" />
+      </svg>
+    </span>
   );
 }

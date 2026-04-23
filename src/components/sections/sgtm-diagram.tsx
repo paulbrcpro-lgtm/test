@@ -1,216 +1,247 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
+import {
+  Ga4Logo,
+  GoogleAdsLogo,
+  GoogleCloudLogo,
+  GtmLogo,
+  MetaLogo,
+  SalesforceLogo,
+  StapeLogo,
+  type BrandLogo,
+} from "@/components/brand/logos";
+import { Globe, Database } from "lucide-react";
+
+type NodeDef = {
+  id: string;
+  label: string;
+  sub?: string;
+  position: { x: number; y: number };
+  width: number;
+  height: number;
+  logos?: BrandLogo[];
+  Icon?: (p: { className?: string }) => React.JSX.Element;
+  tone?: "default" | "core";
+};
+
+const nodes: NodeDef[] = [
+  {
+    id: "browser",
+    label: "Navigateur",
+    sub: "dataLayer · Consent v2",
+    position: { x: 40, y: 50 },
+    width: 220,
+    height: 110,
+    Icon: (p) => <Globe {...p} aria-hidden="true" />,
+  },
+  {
+    id: "crm",
+    label: "CRM / Backend",
+    sub: "Offline conv. · LTV · scoring",
+    position: { x: 40, y: 310 },
+    width: 220,
+    height: 110,
+    logos: [{ name: "Salesforce", Component: SalesforceLogo }],
+    Icon: (p) => <Database {...p} aria-hidden="true" />,
+  },
+  {
+    id: "sgtm",
+    label: "Conteneur sGTM",
+    sub: "tag.votre-domaine.fr · SHA-256",
+    position: { x: 390, y: 175 },
+    width: 260,
+    height: 140,
+    logos: [
+      { name: "GTM", Component: GtmLogo },
+      { name: "Google Cloud", Component: GoogleCloudLogo },
+      { name: "Stape", Component: StapeLogo },
+    ],
+    tone: "core",
+  },
+  {
+    id: "gads",
+    label: "Google Ads",
+    sub: "Enhanced conv.",
+    position: { x: 780, y: 20 },
+    width: 200,
+    height: 90,
+    logos: [{ name: "Google Ads", Component: GoogleAdsLogo }],
+  },
+  {
+    id: "ga4",
+    label: "GA4",
+    sub: "Measurement Protocol",
+    position: { x: 780, y: 140 },
+    width: 200,
+    height: 90,
+    logos: [{ name: "GA4", Component: Ga4Logo }],
+  },
+  {
+    id: "meta",
+    label: "Meta CAPI",
+    sub: "Conversion API",
+    position: { x: 780, y: 260 },
+    width: 200,
+    height: 90,
+    logos: [{ name: "Meta", Component: MetaLogo }],
+  },
+  {
+    id: "adsapi",
+    label: "Ads API",
+    sub: "Offline conversions",
+    position: { x: 780, y: 380 },
+    width: 200,
+    height: 90,
+    logos: [{ name: "Google Ads", Component: GoogleAdsLogo }],
+  },
+];
+
+type Edge = { from: string; to: string; dashed?: boolean; gold?: boolean; delay: number };
+
+const edges: Edge[] = [
+  { from: "browser", to: "sgtm", delay: 0.2 },
+  { from: "crm", to: "sgtm", dashed: true, delay: 0.4 },
+  { from: "sgtm", to: "gads", gold: true, delay: 0.7 },
+  { from: "sgtm", to: "ga4", gold: true, delay: 0.85 },
+  { from: "sgtm", to: "meta", gold: true, delay: 1.0 },
+  { from: "sgtm", to: "adsapi", gold: true, delay: 1.15 },
+];
 
 export function SgtmDiagram() {
   const reduceMotion = useReducedMotion();
-  const pathAnim = (delay: number) => ({
-    initial: { pathLength: 0, opacity: 0 },
-    whileInView: { pathLength: 1, opacity: 1 },
-    viewport: { once: true, margin: "-100px" },
-    transition: {
-      duration: reduceMotion ? 0 : 1.2,
-      delay: reduceMotion ? 0 : delay,
-      ease: "easeInOut" as const,
-    },
-  });
-
-  const boxAnim = (delay: number) => ({
-    initial: { opacity: 0, y: reduceMotion ? 0 : 8 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-100px" },
-    transition: { duration: 0.5, delay: reduceMotion ? 0 : delay },
-  });
+  const nodeMap = Object.fromEntries(nodes.map((n) => [n.id, n]));
 
   return (
-    <figure className="w-full overflow-x-auto">
-      <svg
-        viewBox="0 0 1040 520"
-        className="mx-auto w-full max-w-5xl"
-        role="img"
-        aria-label="Schéma du flux de données entre le navigateur, le conteneur server-side GTM, les plateformes Ads et le CRM."
-      >
-        <defs>
-          <marker
-            id="arrow"
-            markerWidth="10"
-            markerHeight="10"
-            refX="9"
-            refY="5"
-            orient="auto"
-            markerUnits="strokeWidth"
+    <figure className="relative mx-auto w-full max-w-5xl overflow-x-auto">
+      <div className="relative aspect-[1040/500] w-full min-w-[720px]">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-25"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, rgba(234,179,8,0.18) 1px, transparent 1px), linear-gradient(to bottom, rgba(234,179,8,0.18) 1px, transparent 1px)",
+            backgroundSize: "32px 32px",
+            maskImage: "radial-gradient(circle at center, black 30%, transparent 80%)",
+            WebkitMaskImage: "radial-gradient(circle at center, black 30%, transparent 80%)",
+          }}
+        />
+
+        <svg
+          viewBox="0 0 1040 500"
+          className="absolute inset-0 h-full w-full"
+          role="img"
+          aria-label="Flux de données entre le navigateur, le conteneur server-side GTM, les plateformes publicitaires et le CRM."
+        >
+          <defs>
+            <marker
+              id="arrow-gold"
+              markerWidth="8"
+              markerHeight="8"
+              refX="7"
+              refY="4"
+              orient="auto"
+              markerUnits="strokeWidth"
+            >
+              <path d="M0,0 L8,4 L0,8 z" fill="#EAB308" />
+            </marker>
+            <marker
+              id="arrow-muted"
+              markerWidth="8"
+              markerHeight="8"
+              refX="7"
+              refY="4"
+              orient="auto"
+              markerUnits="strokeWidth"
+            >
+              <path d="M0,0 L8,4 L0,8 z" fill="#71717A" />
+            </marker>
+          </defs>
+
+          {edges.map((e) => {
+            const from = nodeMap[e.from];
+            const to = nodeMap[e.to];
+            const fromX = from.position.x + from.width;
+            const fromY = from.position.y + from.height / 2;
+            const toX = to.position.x;
+            const toY = to.position.y + to.height / 2;
+            const midX = (fromX + toX) / 2;
+            const d = `M ${fromX} ${fromY} C ${midX} ${fromY}, ${midX} ${toY}, ${toX} ${toY}`;
+            return (
+              <motion.path
+                key={`${e.from}-${e.to}`}
+                d={d}
+                fill="none"
+                stroke={e.gold ? "#EAB308" : "#52525B"}
+                strokeWidth={e.gold ? 1.75 : 1.25}
+                strokeDasharray={e.dashed ? "4 4" : undefined}
+                markerEnd={e.gold ? "url(#arrow-gold)" : "url(#arrow-muted)"}
+                initial={{ pathLength: 0, opacity: 0 }}
+                whileInView={{ pathLength: 1, opacity: 1 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{
+                  duration: reduceMotion ? 0 : 1.2,
+                  delay: reduceMotion ? 0 : e.delay,
+                  ease: "easeInOut",
+                }}
+              />
+            );
+          })}
+        </svg>
+
+        {nodes.map((n, i) => (
+          <motion.div
+            key={n.id}
+            initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5, delay: reduceMotion ? 0 : i * 0.08 }}
+            className="absolute"
+            style={{
+              left: `${(n.position.x / 1040) * 100}%`,
+              top: `${(n.position.y / 500) * 100}%`,
+              width: `${(n.width / 1040) * 100}%`,
+              height: `${(n.height / 500) * 100}%`,
+            }}
           >
-            <path d="M0,0 L10,5 L0,10 z" fill="#334155" />
-          </marker>
-          <marker
-            id="arrow-gold"
-            markerWidth="10"
-            markerHeight="10"
-            refX="9"
-            refY="5"
-            orient="auto"
-            markerUnits="strokeWidth"
-          >
-            <path d="M0,0 L10,5 L0,10 z" fill="#CA8A04" />
-          </marker>
-        </defs>
+            <div
+              className={
+                n.tone === "core"
+                  ? "relative flex h-full w-full flex-col justify-between rounded-xl border border-gold/40 bg-gradient-to-br from-gold/15 via-ink-900/80 to-ink-950/80 p-3 backdrop-blur-xl shadow-[0_0_60px_-15px_rgba(234,179,8,0.5)] md:p-4"
+                  : "relative flex h-full w-full flex-col justify-between rounded-xl border border-ink-700 bg-ink-900/80 p-3 backdrop-blur-xl md:p-4"
+              }
+            >
+              <div>
+                <div className="flex items-center gap-2">
+                  {n.Icon && <n.Icon className="h-3.5 w-3.5 text-gold md:h-4 md:w-4" />}
+                  <p className={n.tone === "core" ? "text-xs font-bold text-ink-50 md:text-sm" : "text-[11px] font-bold text-ink-50 md:text-xs"}>
+                    {n.label}
+                  </p>
+                </div>
+                {n.sub && (
+                  <p className="mt-1 font-mono text-[8px] text-ink-300 md:text-[10px]">{n.sub}</p>
+                )}
+              </div>
+              {n.logos && n.logos.length > 0 && (
+                <div className="flex items-center gap-1 md:gap-1.5">
+                  {n.logos.map(({ name, Component }) => (
+                    <div
+                      key={name}
+                      className="flex h-5 w-5 items-center justify-center rounded-md border border-ink-700 bg-ink-950 md:h-6 md:w-6"
+                      title={name}
+                    >
+                      <Component size={12} />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        ))}
+      </div>
 
-        {/* Browser */}
-        <motion.g {...boxAnim(0)}>
-          <rect x="40" y="60" width="220" height="120" fill="#F8FAFC" stroke="#0F172A" strokeWidth="1.5" />
-          <text x="60" y="90" fill="#0F172A" fontFamily="Satoshi, sans-serif" fontSize="16" fontWeight="700">
-            Navigateur
-          </text>
-          <text x="60" y="112" fill="#475569" fontFamily="JetBrains Mono, monospace" fontSize="11">
-            GTM web (client)
-          </text>
-          <text x="60" y="132" fill="#475569" fontFamily="JetBrains Mono, monospace" fontSize="11">
-            Consent Mode v2
-          </text>
-          <text x="60" y="152" fill="#475569" fontFamily="JetBrains Mono, monospace" fontSize="11">
-            dataLayer events
-          </text>
-        </motion.g>
-
-        {/* sGTM */}
-        <motion.g {...boxAnim(0.2)}>
-          <rect x="400" y="60" width="240" height="120" fill="#0F172A" stroke="#0F172A" strokeWidth="1.5" />
-          <text x="420" y="90" fill="#F8FAFC" fontFamily="Satoshi, sans-serif" fontSize="16" fontWeight="700">
-            Conteneur sGTM
-          </text>
-          <text x="420" y="112" fill="#CA8A04" fontFamily="JetBrains Mono, monospace" fontSize="11">
-            tag.votre-domaine.fr
-          </text>
-          <text x="420" y="132" fill="#CBD5E1" fontFamily="JetBrains Mono, monospace" fontSize="11">
-            Cloud Run / Stape
-          </text>
-          <text x="420" y="152" fill="#CBD5E1" fontFamily="JetBrains Mono, monospace" fontSize="11">
-            Hash SHA-256 user data
-          </text>
-        </motion.g>
-
-        {/* CRM */}
-        <motion.g {...boxAnim(0.3)}>
-          <rect x="40" y="340" width="220" height="120" fill="#F8FAFC" stroke="#0F172A" strokeWidth="1.5" />
-          <text x="60" y="370" fill="#0F172A" fontFamily="Satoshi, sans-serif" fontSize="16" fontWeight="700">
-            CRM / Backend
-          </text>
-          <text x="60" y="392" fill="#475569" fontFamily="JetBrains Mono, monospace" fontSize="11">
-            Salesforce / HubSpot
-          </text>
-          <text x="60" y="412" fill="#475569" fontFamily="JetBrains Mono, monospace" fontSize="11">
-            Offline conversions
-          </text>
-          <text x="60" y="432" fill="#475569" fontFamily="JetBrains Mono, monospace" fontSize="11">
-            LTV, scoring, closes
-          </text>
-        </motion.g>
-
-        {/* Destinations */}
-        <motion.g {...boxAnim(0.4)}>
-          <rect x="780" y="30" width="220" height="90" fill="#F8FAFC" stroke="#0F172A" strokeWidth="1.5" />
-          <text x="800" y="58" fill="#0F172A" fontFamily="Satoshi, sans-serif" fontSize="15" fontWeight="700">
-            Google Ads
-          </text>
-          <text x="800" y="80" fill="#475569" fontFamily="JetBrains Mono, monospace" fontSize="11">
-            Enhanced conversions
-          </text>
-          <text x="800" y="100" fill="#475569" fontFamily="JetBrains Mono, monospace" fontSize="11">
-            gclid + user data
-          </text>
-        </motion.g>
-
-        <motion.g {...boxAnim(0.5)}>
-          <rect x="780" y="140" width="220" height="90" fill="#F8FAFC" stroke="#0F172A" strokeWidth="1.5" />
-          <text x="800" y="168" fill="#0F172A" fontFamily="Satoshi, sans-serif" fontSize="15" fontWeight="700">
-            GA4
-          </text>
-          <text x="800" y="190" fill="#475569" fontFamily="JetBrains Mono, monospace" fontSize="11">
-            Measurement Protocol
-          </text>
-          <text x="800" y="210" fill="#475569" fontFamily="JetBrains Mono, monospace" fontSize="11">
-            server-side events
-          </text>
-        </motion.g>
-
-        <motion.g {...boxAnim(0.6)}>
-          <rect x="780" y="250" width="220" height="90" fill="#F8FAFC" stroke="#0F172A" strokeWidth="1.5" />
-          <text x="800" y="278" fill="#0F172A" fontFamily="Satoshi, sans-serif" fontSize="15" fontWeight="700">
-            Meta CAPI
-          </text>
-          <text x="800" y="300" fill="#475569" fontFamily="JetBrains Mono, monospace" fontSize="11">
-            Conversions API
-          </text>
-          <text x="800" y="320" fill="#475569" fontFamily="JetBrains Mono, monospace" fontSize="11">
-            hashed user data
-          </text>
-        </motion.g>
-
-        <motion.g {...boxAnim(0.7)}>
-          <rect x="780" y="360" width="220" height="90" fill="#F8FAFC" stroke="#0F172A" strokeWidth="1.5" />
-          <text x="800" y="388" fill="#0F172A" fontFamily="Satoshi, sans-serif" fontSize="15" fontWeight="700">
-            Ads API
-          </text>
-          <text x="800" y="410" fill="#475569" fontFamily="JetBrains Mono, monospace" fontSize="11">
-            Offline conversions
-          </text>
-          <text x="800" y="430" fill="#475569" fontFamily="JetBrains Mono, monospace" fontSize="11">
-            CRM → Ads upload
-          </text>
-        </motion.g>
-
-        {/* Connections */}
-        <motion.path
-          d="M 260 120 L 400 120"
-          fill="none"
-          stroke="#334155"
-          strokeWidth="1.5"
-          markerEnd="url(#arrow)"
-          {...pathAnim(0.3)}
-        />
-        <motion.path
-          d="M 260 400 L 330 400 L 330 180 Q 330 140 380 140 L 400 140"
-          fill="none"
-          stroke="#334155"
-          strokeWidth="1.5"
-          markerEnd="url(#arrow)"
-          {...pathAnim(0.5)}
-        />
-        <motion.path
-          d="M 640 100 Q 700 100 720 85 L 780 75"
-          fill="none"
-          stroke="#CA8A04"
-          strokeWidth="1.75"
-          markerEnd="url(#arrow-gold)"
-          {...pathAnim(0.7)}
-        />
-        <motion.path
-          d="M 640 125 Q 710 150 770 180 L 780 185"
-          fill="none"
-          stroke="#CA8A04"
-          strokeWidth="1.75"
-          markerEnd="url(#arrow-gold)"
-          {...pathAnim(0.8)}
-        />
-        <motion.path
-          d="M 640 150 Q 720 220 770 285 L 780 290"
-          fill="none"
-          stroke="#CA8A04"
-          strokeWidth="1.75"
-          markerEnd="url(#arrow-gold)"
-          {...pathAnim(0.9)}
-        />
-        <motion.path
-          d="M 640 170 Q 720 280 770 395 L 780 400"
-          fill="none"
-          stroke="#CA8A04"
-          strokeWidth="1.75"
-          markerEnd="url(#arrow-gold)"
-          {...pathAnim(1)}
-        />
-      </svg>
-      <figcaption className="mt-6 text-center text-xs font-mono uppercase tracking-wider text-ink-500">
-        Flux typique — données first-party, hashées, routées server-side
+      <figcaption className="mt-8 text-center font-mono text-xs uppercase tracking-wider text-ink-300">
+        Données first-party · hashées SHA-256 · routées server-side
       </figcaption>
     </figure>
   );

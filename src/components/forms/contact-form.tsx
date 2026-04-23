@@ -77,15 +77,12 @@ export function ContactForm() {
         initial={{ opacity: 0, y: reduceMotion ? 0 : 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="border border-ink-200 bg-background p-10 md:p-12"
       >
-        <div className="flex h-12 w-12 items-center justify-center bg-gold/10 text-gold">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gold/40 bg-gold/10 text-gold">
           <Check className="h-6 w-6" aria-hidden="true" />
         </div>
-        <h3 className="mt-6 text-display-md text-ink-900">
-          Message reçu.
-        </h3>
-        <p className="mt-4 max-w-prose text-base text-ink-600 leading-relaxed">
+        <h3 className="mt-6 text-display-md text-ink-50">Message reçu.</h3>
+        <p className="mt-4 max-w-prose text-base text-ink-200 leading-relaxed">
           Je reviens vers vous sous 24 heures ouvrées avec une proposition de
           créneau pour l&apos;audit. En attendant, si vous avez des documents
           pertinents (accès GTM en lecture, exports Ads récents, architecture
@@ -210,10 +207,10 @@ export function ContactForm() {
           <input
             id="consent"
             type="checkbox"
-            className="mt-1 h-4 w-4 accent-ink-900"
+            className="mt-1 h-4 w-4 accent-gold"
             {...register("consent")}
           />
-          <span className="text-sm text-ink-600 leading-relaxed">
+          <span className="text-sm text-ink-200 leading-relaxed">
             J&apos;accepte d&apos;être recontacté à propos de cette demande.
             Aucune donnée n&apos;est utilisée à d&apos;autres fins.
           </span>
@@ -230,7 +227,7 @@ export function ContactForm() {
             initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="flex items-start gap-3 border border-red-300 bg-red-50 p-4 text-sm text-red-800"
+            className="flex items-start gap-3 rounded-lg border border-red-500/40 bg-red-950/40 p-4 text-sm text-red-200"
           >
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
             <p>{serverError}</p>
@@ -238,7 +235,7 @@ export function ContactForm() {
         )}
       </AnimatePresence>
 
-      <div className="flex flex-wrap items-center gap-4 border-t border-ink-200 pt-6">
+      <div className="flex flex-wrap items-center gap-4 border-t border-ink-800 pt-6">
         <Button
           type="submit"
           variant="primary"
@@ -248,9 +245,7 @@ export function ContactForm() {
           {state === "submitting" ? "Envoi..." : "Envoyer ma demande"}
           {state !== "submitting" && <ArrowRight className="h-4 w-4" />}
         </Button>
-        <p className="text-xs text-ink-500">
-          Réponse sous 24 heures ouvrées.
-        </p>
+        <p className="text-xs text-ink-300">Réponse sous 24 heures ouvrées.</p>
       </div>
     </form>
   );
@@ -274,7 +269,7 @@ function Field({
       <Label htmlFor={htmlFor}>{label}</Label>
       {children}
       {hint && !error && (
-        <p className="text-xs text-ink-500 leading-relaxed">{hint}</p>
+        <p className="text-xs text-ink-300 leading-relaxed">{hint}</p>
       )}
       {error && <FieldError message={error} />}
     </div>
@@ -283,7 +278,7 @@ function Field({
 
 function FieldError({ message }: { message: string }) {
   return (
-    <p role="alert" className="text-xs text-red-700">
+    <p role="alert" className="text-xs text-red-300">
       {message}
     </p>
   );
@@ -296,7 +291,7 @@ const Select = ({
 }: React.SelectHTMLAttributes<HTMLSelectElement>) => (
   <select
     className={
-      "flex h-12 w-full border border-ink-300 bg-background px-4 py-2 text-[0.95rem] text-ink-900 focus-visible:outline-none focus-visible:border-ink-900 transition-colors cursor-pointer " +
+      "flex h-12 w-full rounded-lg border border-ink-700 bg-ink-900/60 px-4 py-2 text-[0.95rem] text-ink-50 focus-visible:outline-none focus-visible:border-gold focus-visible:ring-1 focus-visible:ring-gold/40 transition-colors cursor-pointer backdrop-blur-sm " +
       (className ?? "")
     }
     {...props}

@@ -30,32 +30,42 @@ const steps = [
 
 export function Method() {
   return (
-    <section className="py-24 md:py-32">
+    <section className="relative py-24 md:py-32">
       <div className="container mx-auto">
         <Reveal>
-          <p className="eyebrow">La méthode</p>
-          <h2 className="mt-4 max-w-3xl text-display-xl text-ink-900">
+          <p className="eyebrow-gold">La méthode</p>
+          <h2 className="mt-4 max-w-3xl text-display-xl text-ink-50">
             Cinq étapes, pas dix-huit.
           </h2>
-          <p className="mt-6 max-w-2xl text-lg text-ink-600 leading-relaxed">
+          <p className="mt-6 max-w-2xl text-lg text-ink-200 leading-relaxed">
             Le tracking n&apos;est pas un projet qui se termine un jour — c&apos;est
             une infrastructure qui vit. Voici comment je la mets en place, puis
             comment on la tient dans le temps.
           </p>
         </Reveal>
 
-        <ol className="mt-16 space-y-px bg-ink-200">
+        <ol className="relative mt-16">
+          <div
+            className="pointer-events-none absolute left-5 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-ink-700 to-transparent md:left-[calc(16.666%+12px)]"
+            aria-hidden="true"
+          />
           {steps.map((s, i) => (
             <Reveal key={s.n} delay={i * 0.05}>
-              <li className="grid gap-6 bg-background p-8 md:grid-cols-12 md:gap-10 md:p-12">
-                <div className="md:col-span-2">
-                  <span className="number-display text-4xl text-gold md:text-5xl">
-                    {s.n}
-                  </span>
+              <li className="relative grid gap-6 py-8 md:grid-cols-12 md:gap-10 md:py-10">
+                <div className="md:col-span-2 md:pl-3">
+                  <div className="flex items-center gap-3">
+                    <span className="relative flex h-3 w-3 items-center justify-center" aria-hidden="true">
+                      <span className="absolute inline-flex h-full w-full rounded-full bg-gold/40 animate-pulse" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-gold" />
+                    </span>
+                    <span className="number-display text-3xl text-gold md:text-4xl">
+                      {s.n}
+                    </span>
+                  </div>
                 </div>
-                <div className="md:col-span-10">
-                  <h3 className="text-2xl font-bold text-ink-900">{s.title}</h3>
-                  <p className="mt-3 max-w-2xl text-base text-ink-600 leading-relaxed">
+                <div className="md:col-span-10 md:pl-6">
+                  <h3 className="text-2xl font-bold text-ink-50">{s.title}</h3>
+                  <p className="mt-3 max-w-2xl text-base text-ink-200 leading-relaxed">
                     {s.body}
                   </p>
                 </div>

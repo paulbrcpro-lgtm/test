@@ -4,6 +4,7 @@ import { Analytics, AnalyticsNoScript } from "@/components/analytics/analytics";
 import { ConsentBanner } from "@/components/analytics/consent-banner";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { AuroraBackground } from "@/components/motion/aurora-background";
 import { siteConfig } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -41,7 +42,8 @@ export default function RootLayout({
       <head>
         <Analytics />
       </head>
-      <body className="flex min-h-full flex-col">
+      <body className="relative flex min-h-full flex-col bg-surface text-ink-50">
+        <AuroraBackground />
         <AnalyticsNoScript />
         <Navbar />
         <div className="flex-1">{children}</div>

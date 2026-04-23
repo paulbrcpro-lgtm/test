@@ -4,20 +4,25 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
   {
     variants: {
       variant: {
-        primary: "bg-ink-900 text-ink-50 hover:bg-ink-950",
-        gold: "bg-gold text-ink-950 hover:bg-gold-700 hover:text-white",
-        outline: "border border-ink-900 text-ink-900 hover:bg-ink-900 hover:text-ink-50",
-        ghost: "text-ink-700 hover:text-ink-900 hover:bg-ink-100",
-        link: "text-ink-900 underline-offset-4 hover:underline decoration-gold",
+        primary:
+          "bg-gold text-ink-950 hover:bg-gold-400 shadow-[0_0_0_1px_rgba(234,179,8,0.3),0_8px_32px_-8px_rgba(234,179,8,0.5)]",
+        secondary:
+          "bg-ink-50 text-ink-950 hover:bg-ink-100",
+        outline:
+          "border border-ink-700 text-ink-50 hover:bg-ink-800 hover:border-ink-600",
+        ghost:
+          "text-ink-200 hover:text-ink-50 hover:bg-ink-800",
+        link:
+          "text-ink-50 underline-offset-4 hover:underline decoration-gold hover:text-gold",
       },
       size: {
-        sm: "h-9 px-4 text-sm rounded-none",
-        md: "h-11 px-6 text-[0.95rem] rounded-none",
-        lg: "h-13 px-8 text-base rounded-none",
+        sm: "h-9 px-4 text-sm rounded-full",
+        md: "h-11 px-5 text-[0.95rem] rounded-full",
+        lg: "h-13 px-7 text-base rounded-full",
       },
     },
     defaultVariants: {

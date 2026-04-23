@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 
 const offers = [
   {
+    badge: "01 · Diagnostic",
     name: "Audit Tracking",
     positioning: "Un diagnostic exploitable en 5 jours",
     price: "À partir de 2 900 €",
@@ -33,8 +34,10 @@ const offers = [
       "Roadmap priorisée avec estimation d'impact business",
     ],
     cta: "Briefer un audit",
+    highlight: false,
   },
   {
+    badge: "02 · Build",
     name: "Mise en place server-side",
     positioning: "L'infrastructure de mesure, installée",
     price: "À partir de 8 500 €",
@@ -49,8 +52,10 @@ const offers = [
       "Documentation complète : schémas, variables, procédure de recette",
     ],
     cta: "Démarrer la mise en place",
+    highlight: true,
   },
   {
+    badge: "03 · Run",
     name: "Pilotage Ads + Mesure",
     positioning: "Un consultant intégré à votre équipe",
     price: "À partir de 3 200 € / mois",
@@ -65,6 +70,7 @@ const offers = [
       "Veille sur les évolutions plateforme (Consent, AI-Max, IPM, etc.)",
     ],
     cta: "Démarrer le pilotage",
+    highlight: false,
   },
 ];
 
@@ -79,7 +85,7 @@ const faq = [
   },
   {
     q: "sGTM, il faut Google Cloud ? C'est cher ?",
-    a: "Deux options principales : Google Cloud Run (App Engine est déprécié pour ce usage) ou un fournisseur managé comme Stape. Sur Cloud Run, comptez 20 à 80 € / mois selon le volume de requêtes. Sur Stape, 30 à 120 € / mois selon le forfait. L'investissement est négligeable face au gain en qualité de signal et à la réduction de CPA qui en découle.",
+    a: "Deux options principales : Google Cloud Run (App Engine est déprécié pour cet usage) ou un fournisseur managé comme Stape. Sur Cloud Run, comptez 20 à 80 € / mois selon le volume de requêtes. Sur Stape, 30 à 120 € / mois selon le forfait. L'investissement est négligeable face au gain en qualité de signal et à la réduction de CPA qui en découle.",
   },
   {
     q: "Enhanced conversions, first-party data, CAPI : même combat ?",
@@ -105,11 +111,11 @@ export default function ServicesPage() {
       <section className="pt-16 pb-12 md:pt-20 md:pb-16">
         <div className="container mx-auto">
           <Reveal>
-            <p className="eyebrow">Services</p>
-            <h1 className="mt-4 max-w-4xl text-display-2xl text-ink-900">
+            <p className="eyebrow-gold">Services</p>
+            <h1 className="mt-4 max-w-4xl text-display-2xl text-ink-50">
               Trois façons de travailler ensemble.
             </h1>
-            <p className="mt-6 max-w-2xl text-lg text-ink-600 leading-relaxed">
+            <p className="mt-6 max-w-2xl text-lg text-ink-200 leading-relaxed">
               Un audit qui débloque, une mise en place qui structure, un
               pilotage qui tient dans le temps. Vous choisissez en fonction de
               l&apos;étape à laquelle vous vous trouvez.
@@ -120,44 +126,60 @@ export default function ServicesPage() {
 
       <section className="py-16">
         <div className="container mx-auto">
-          <Stagger className="space-y-px bg-ink-200">
+          <Stagger className="grid gap-5 lg:grid-cols-3">
             {offers.map((o) => (
-              <StaggerItem key={o.name} className="bg-background">
-                <article className="grid gap-10 p-8 md:grid-cols-12 md:p-12">
-                  <div className="md:col-span-4">
-                    <p className="eyebrow">{o.name}</p>
-                    <h2 className="mt-3 text-display-md text-ink-900">
-                      {o.positioning}
-                    </h2>
-                    <div className="mt-6 border-t border-ink-200 pt-5">
-                      <p className="number-display text-3xl text-ink-900">
-                        {o.price}
-                      </p>
-                      <p className="mt-1 text-xs text-ink-500">{o.priceSub}</p>
+              <StaggerItem key={o.name}>
+                <article
+                  className={
+                    o.highlight
+                      ? "relative flex h-full flex-col overflow-hidden rounded-2xl border border-gold/50 bg-gradient-to-b from-gold/5 to-ink-950/40 p-8 backdrop-blur-sm shadow-[0_0_60px_-20px_rgba(234,179,8,0.5)] md:p-10"
+                      : "relative flex h-full flex-col overflow-hidden rounded-2xl border border-ink-800 bg-ink-900/40 p-8 backdrop-blur-sm md:p-10"
+                  }
+                >
+                  {o.highlight && (
+                    <div className="absolute right-4 top-4 rounded-full border border-gold/50 bg-gold/10 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-gold">
+                      Le plus demandé
                     </div>
+                  )}
+                  <p className="eyebrow-gold">{o.badge}</p>
+                  <h2 className="mt-4 text-2xl font-bold text-ink-50">{o.name}</h2>
+                  <p className="mt-2 text-sm text-ink-200">{o.positioning}</p>
+
+                  <div className="mt-6 border-y border-ink-800 py-5">
+                    <p className="number-display text-3xl text-ink-50">{o.price}</p>
+                    <p className="mt-1 text-xs text-ink-300">{o.priceSub}</p>
                   </div>
-                  <div className="md:col-span-8">
-                    <p className="text-base text-ink-700 leading-relaxed">
-                      {o.description}
-                    </p>
-                    <ul className="mt-6 space-y-3">
-                      {o.deliverables.map((d) => (
-                        <li key={d} className="flex items-start gap-3">
-                          <Check
-                            className="mt-[3px] h-5 w-5 shrink-0 text-gold"
-                            aria-hidden="true"
-                          />
-                          <span className="text-sm text-ink-700 leading-relaxed">
-                            {d}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                    <div className="mt-8">
-                      <Button asChild variant="primary" size="md">
-                        <Link href="/contact">{o.cta}</Link>
-                      </Button>
-                    </div>
+
+                  <p className="mt-6 text-base text-ink-100 leading-relaxed">
+                    {o.description}
+                  </p>
+
+                  <ul className="mt-6 space-y-3 flex-1">
+                    {o.deliverables.map((d) => (
+                      <li key={d} className="flex items-start gap-3">
+                        <Check
+                          className="mt-[3px] h-4 w-4 shrink-0 text-gold"
+                          aria-hidden="true"
+                        />
+                        <span className="text-sm text-ink-100 leading-relaxed">
+                          {d}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-8">
+                    <Button
+                      asChild
+                      variant={o.highlight ? "primary" : "outline"}
+                      size="md"
+                      className="w-full"
+                    >
+                      <Link href="/contact">
+                        {o.cta}
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    </Button>
                   </div>
                 </article>
               </StaggerItem>
@@ -166,16 +188,16 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <section className="py-24 md:py-32 bg-ink-50">
+      <section className="py-24 md:py-32">
         <div className="container mx-auto">
           <div className="grid gap-12 md:grid-cols-12">
             <div className="md:col-span-4">
               <Reveal>
-                <p className="eyebrow">FAQ technique</p>
-                <h2 className="mt-4 text-display-lg text-ink-900">
+                <p className="eyebrow-gold">FAQ technique</p>
+                <h2 className="mt-4 text-display-lg text-ink-50">
                   Les questions qu&apos;on me pose au premier appel.
                 </h2>
-                <p className="mt-5 text-base text-ink-600 leading-relaxed">
+                <p className="mt-5 text-base text-ink-200 leading-relaxed">
                   Je garde cette liste à jour. Si votre question n&apos;y est
                   pas, elle aura sa réponse pendant l&apos;audit gratuit.
                 </p>
@@ -183,14 +205,16 @@ export default function ServicesPage() {
             </div>
             <div className="md:col-span-8">
               <Reveal delay={0.1}>
-                <Accordion type="single" collapsible className="w-full">
-                  {faq.map((item, i) => (
-                    <AccordionItem key={item.q} value={`q-${i}`}>
-                      <AccordionTrigger>{item.q}</AccordionTrigger>
-                      <AccordionContent>{item.a}</AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
+                <div className="rounded-2xl border border-ink-800 bg-ink-900/40 px-6 backdrop-blur-sm md:px-10">
+                  <Accordion type="single" collapsible className="w-full">
+                    {faq.map((item, i) => (
+                      <AccordionItem key={item.q} value={`q-${i}`}>
+                        <AccordionTrigger>{item.q}</AccordionTrigger>
+                        <AccordionContent>{item.a}</AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </div>
               </Reveal>
             </div>
           </div>

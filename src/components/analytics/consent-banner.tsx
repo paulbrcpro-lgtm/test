@@ -61,14 +61,14 @@ export function ConsentBanner() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: reduceMotion ? 0 : 24 }}
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-3xl border border-ink-200 bg-background shadow-xl md:inset-x-auto md:right-6 md:bottom-6"
+          className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-3xl rounded-2xl border border-ink-800 bg-ink-950/90 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] backdrop-blur-xl md:inset-x-auto md:right-6 md:bottom-6"
         >
           <div className="p-6 md:p-8">
-            <p className="eyebrow mb-3">Cookies & consentement</p>
-            <h2 id="consent-title" className="text-xl font-bold text-ink-900">
+            <p className="eyebrow-gold mb-3">Cookies & consentement</p>
+            <h2 id="consent-title" className="text-xl font-bold text-ink-50">
               Vos données, vos choix
             </h2>
-            <p id="consent-desc" className="mt-3 text-sm text-ink-600 leading-relaxed">
+            <p id="consent-desc" className="mt-3 text-sm text-ink-200 leading-relaxed">
               Ce site utilise des cookies pour mesurer l&apos;audience et, si vous
               l&apos;acceptez, optimiser la pertinence des campagnes publicitaires
               (Consent Mode v2). Vous pouvez accepter, refuser, ou personnaliser finement.
@@ -76,7 +76,7 @@ export function ConsentBanner() {
             </p>
 
             {customize && (
-              <div className="mt-6 space-y-4 border-t border-ink-200 pt-5">
+              <div className="mt-6 space-y-4 border-t border-ink-800 pt-5">
                 <CategoryRow
                   id="analytics"
                   label="Mesure d'audience"
@@ -152,11 +152,11 @@ function CategoryRow({
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="mt-1 h-4 w-4 accent-ink-900"
+        className="mt-1 h-4 w-4 accent-gold"
       />
       <span className="flex-1">
-        <span className="block text-sm font-semibold text-ink-900">{label}</span>
-        <span className="mt-1 block text-xs text-ink-500 leading-relaxed">
+        <span className="block text-sm font-semibold text-ink-50">{label}</span>
+        <span className="mt-1 block text-xs text-ink-300 leading-relaxed">
           {desc}
         </span>
       </span>
