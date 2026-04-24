@@ -5,20 +5,20 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { geoMercator, geoPath } from "d3-geo";
+import { geoGraticule, geoMercator, geoPath } from "d3-geo";
 import { countryFeatures } from "./data";
 import { DotGrid } from "./DotGrid";
 import { ParisMarker } from "./ParisMarker";
+import { HUDOverlay } from "./HUDOverlay";
 
 const PARIS: [number, number] = [2.3522, 48.8566];
 const EUROPE_CENTER: [number, number] = [14, 54];
+const ORANGE = "#ff8a1f";
 
 export const EuropeIntro: React.FC = () => {
   const frame = useCurrentFrame();
   const { width, height, durationInFrames } = useVideoConfig();
 
-  // Phase 1 (drift, 0-25%): la caméra flotte à peine, on admire l'Europe
-  // Phase 2 (push, 25-90%): zoom cinématique vers Paris, easing doux
   const driftEnd = Math.round(durationInFrames * 0.22);
   const pushEnd = Math.round(durationInFrames * 0.9);
 
@@ -32,11 +32,9 @@ export const EuropeIntro: React.FC = () => {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-
-  // Combinaison : la phase drift couvre ~10 % de la course, la phase push les 90 % restants
   const t = drift * 0.08 + push * 0.92;
 
-  const scale = interpolate(t, [0, 1], [900, 5400]);
+  const scale = interpolate(t, [0, 1], [950, 5200]);
   const cx = interpolate(t, [0, 1], [EUROPE_CENTER[0], PARIS[0]]);
   const cy = interpolate(t, [0, 1], [EUROPE_CENTER[1], PARIS[1]]);
 
@@ -48,37 +46,41 @@ export const EuropeIntro: React.FC = () => {
   const pathGen = geoPath(projection);
   const parisPoint = projection(PARIS) ?? [width / 2, height / 2];
 
-  // Effet 3D biais : inclinaison X marquée, léger swivel Y et micro roulis Z
-  const tiltX = interpolate(t, [0, 1], [34, 16]);
-  const tiltY = interpolate(t, [0, 1], [-14, 5]);
-  const tiltZ = interpolate(t, [0, 1], [-3.5, 0.5]);
-  // Micro-dérive continue pour un rendu "drone"
-  const orbitY = Math.sin(frame / 70) * 1.8;
-  const orbitX = Math.cos(frame / 90) * 0.9;
+  // Vue plus top-down pour le style tactique (moins de biais qu'avant)
+  const tiltX = interpolate(t, [0, 1], [22, 8]);
+  const tiltY = interpolate(t, [0, 1], [-8, 2]);
+  const tiltZ = interpolate(t, [0, 1], [-1.5, 0]);
+  const orbitY = Math.sin(frame / 80) * 1.0;
+  const orbitX = Math.cos(frame / 95) * 0.5;
 
-  // Traits plus épais (style Micode) - core blanc + halo cyan
-  const strokeWidth = interpolate(t, [0, 1], [2.6, 1.9]);
-  const coreWidth = interpolate(t, [0, 1], [1.3, 0.9]);
+  const strokeWidth = interpolate(t, [0, 1], [1.6, 1.2]);
+  const coreWidth = interpolate(t, [0, 1], [0.8, 0.6]);
 
   const introFade = interpolate(frame, [0, 22], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  const appearFrame = Math.round(durationInFrames * 0.7);
+  const appearFrame = Math.round(durationInFrames * 0.65);
+
+  // Graticule (grille lat/lon) - densité 10°
+  const graticule = geoGraticule().step([10, 10]);
+  const graticulePath = pathGen(graticule()) ?? "";
+
+  // Cercles de "coverage" superposés à des positions fixes
+  const coverageCircles = [
+    { lon: -5, lat: 42, r: 60 }, // Espagne
+    { lon: 11, lat: 46, r: 45 }, // Alpes
+  ];
 
   return (
-    <AbsoluteFill
-      style={{
-        background: "#000000",
-      }}
-    >
+    <AbsoluteFill style={{ background: "#0a0a0a" }}>
       <DotGrid />
 
       <AbsoluteFill
         style={{
-          perspective: "1900px",
-          perspectiveOrigin: "50% 46%",
+          perspective: "2400px",
+          perspectiveOrigin: "50% 50%",
           opacity: introFade,
         }}
       >
@@ -97,54 +99,63 @@ export const EuropeIntro: React.FC = () => {
           >
             <defs>
               <filter
-                id="cyan-glow"
-                x="-80%"
-                y="-80%"
-                width="260%"
-                height="260%"
-              >
-                <feGaussianBlur stdDeviation="8" result="bigBlur" />
-                <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="midBlur" />
-                <feMerge>
-                  <feMergeNode in="bigBlur" />
-                  <feMergeNode in="midBlur" />
-                </feMerge>
-              </filter>
-              <filter
-                id="core-glow"
+                id="soft-glow"
                 x="-50%"
                 y="-50%"
                 width="200%"
                 height="200%"
               >
-                <feGaussianBlur stdDeviation="0.6" result="coreBlur" />
+                <feGaussianBlur stdDeviation="1.8" result="b1" />
                 <feMerge>
-                  <feMergeNode in="coreBlur" />
+                  <feMergeNode in="b1" />
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
+              <pattern
+                id="hatch"
+                width="6"
+                height="6"
+                patternUnits="userSpaceOnUse"
+                patternTransform="rotate(45)"
+              >
+                <rect width="6" height="6" fill="rgba(20,20,20,0.35)" />
+                <line
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="6"
+                  stroke="rgba(140,150,160,0.08)"
+                  strokeWidth="1"
+                />
+              </pattern>
             </defs>
-            {/* Couche 1 : halo cyan large et diffus */}
-            <g filter="url(#cyan-glow)">
+
+            {/* Graticule fin en arrière-plan */}
+            <path
+              d={graticulePath}
+              fill="none"
+              stroke="rgba(140,150,160,0.18)"
+              strokeWidth={0.5}
+            />
+
+            {/* Remplissage pays - texture hachurée subtile */}
+            <g>
               {countryFeatures.map((f, i) => {
                 const d = pathGen(f);
                 if (!d) return null;
                 return (
                   <path
-                    key={`halo-${(f.id as string | number | undefined) ?? i}`}
+                    key={`fill-${(f.id as string | number | undefined) ?? i}`}
                     d={d}
-                    fill="none"
-                    stroke="#2fd9ff"
-                    strokeWidth={strokeWidth + 1.2}
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    opacity={0.85}
+                    fill="url(#hatch)"
+                    stroke="none"
                   />
                 );
               })}
             </g>
-            {/* Couche 2 : trait principal blanc lumineux */}
-            <g filter="url(#core-glow)">
+
+            {/* Trait principal */}
+            <g filter="url(#soft-glow)">
               {countryFeatures.map((f, i) => {
                 const d = pathGen(f);
                 if (!d) return null;
@@ -152,8 +163,8 @@ export const EuropeIntro: React.FC = () => {
                   <path
                     key={`stroke-${(f.id as string | number | undefined) ?? i}`}
                     d={d}
-                    fill="rgba(10,30,60,0.35)"
-                    stroke="rgba(220,240,255,0.55)"
+                    fill="none"
+                    stroke="rgba(220,225,235,0.85)"
                     strokeWidth={strokeWidth}
                     strokeLinejoin="round"
                     strokeLinecap="round"
@@ -161,7 +172,8 @@ export const EuropeIntro: React.FC = () => {
                 );
               })}
             </g>
-            {/* Couche 3 : cœur blanc éclatant très fin */}
+
+            {/* Cœur net */}
             <g>
               {countryFeatures.map((f, i) => {
                 const d = pathGen(f);
@@ -175,10 +187,38 @@ export const EuropeIntro: React.FC = () => {
                     strokeWidth={coreWidth}
                     strokeLinejoin="round"
                     strokeLinecap="round"
+                    opacity={0.75}
                   />
                 );
               })}
             </g>
+
+            {/* Cercles coverage secondaires */}
+            {coverageCircles.map((c, idx) => {
+              const pos = projection([c.lon, c.lat]);
+              if (!pos) return null;
+              const pulsePhase = (frame / 40 + idx * 0.5) % 1;
+              return (
+                <g key={idx} transform={`translate(${pos[0]} ${pos[1]})`}>
+                  <circle
+                    r={c.r}
+                    fill="none"
+                    stroke={ORANGE}
+                    strokeWidth={1.2}
+                    opacity={0.35}
+                    strokeDasharray="4 3"
+                  />
+                  <circle
+                    r={c.r + pulsePhase * 30}
+                    fill="none"
+                    stroke={ORANGE}
+                    strokeWidth={0.8}
+                    opacity={(1 - pulsePhase) * 0.3}
+                  />
+                  <circle r={3} fill={ORANGE} opacity={0.8} />
+                </g>
+              );
+            })}
           </svg>
 
           <ParisMarker
@@ -190,32 +230,17 @@ export const EuropeIntro: React.FC = () => {
         </div>
       </AbsoluteFill>
 
+      {/* Vignette douce */}
       <AbsoluteFill
         style={{
           pointerEvents: "none",
           background:
-            "radial-gradient(ellipse 75% 60% at center, transparent 0%, transparent 45%, rgba(0,0,0,0.75) 85%, #000 100%)",
+            "radial-gradient(ellipse 85% 70% at center, transparent 0%, transparent 50%, rgba(0,0,0,0.55) 88%, #000 100%)",
         }}
       />
 
-      <AbsoluteFill
-        style={{
-          pointerEvents: "none",
-          backdropFilter: "blur(2px)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 70% 55% at center, transparent 55%, black 92%)",
-          maskImage:
-            "radial-gradient(ellipse 70% 55% at center, transparent 55%, black 92%)",
-        }}
-      />
-
-      <AbsoluteFill
-        style={{
-          pointerEvents: "none",
-          background:
-            "linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 18%, transparent 82%, rgba(0,0,0,0.35) 100%)",
-        }}
-      />
+      {/* HUD tactique par-dessus tout */}
+      <HUDOverlay frame={frame} />
     </AbsoluteFill>
   );
 };
