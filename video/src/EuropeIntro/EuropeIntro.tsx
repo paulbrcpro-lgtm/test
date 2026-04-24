@@ -56,7 +56,9 @@ export const EuropeIntro: React.FC = () => {
   const orbitY = Math.sin(frame / 70) * 1.8;
   const orbitX = Math.cos(frame / 90) * 0.9;
 
-  const strokeWidth = interpolate(t, [0, 1], [1.0, 0.75]);
+  // Traits plus épais (style Micode) - core blanc + halo cyan
+  const strokeWidth = interpolate(t, [0, 1], [2.6, 1.9]);
+  const coreWidth = interpolate(t, [0, 1], [1.3, 0.9]);
 
   const introFade = interpolate(frame, [0, 22], [0, 1], {
     extrapolateLeft: "clamp",
@@ -68,8 +70,7 @@ export const EuropeIntro: React.FC = () => {
   return (
     <AbsoluteFill
       style={{
-        background:
-          "radial-gradient(ellipse at 50% 55%, #0a1626 0%, #050a15 55%, #01030a 100%)",
+        background: "#000000",
       }}
     >
       <DotGrid />
@@ -96,36 +97,82 @@ export const EuropeIntro: React.FC = () => {
           >
             <defs>
               <filter
-                id="line-glow"
+                id="cyan-glow"
+                x="-80%"
+                y="-80%"
+                width="260%"
+                height="260%"
+              >
+                <feGaussianBlur stdDeviation="8" result="bigBlur" />
+                <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="midBlur" />
+                <feMerge>
+                  <feMergeNode in="bigBlur" />
+                  <feMergeNode in="midBlur" />
+                </feMerge>
+              </filter>
+              <filter
+                id="core-glow"
                 x="-50%"
                 y="-50%"
                 width="200%"
                 height="200%"
               >
-                <feGaussianBlur stdDeviation="2.2" result="blur1" />
-                <feGaussianBlur
-                  in="SourceGraphic"
-                  stdDeviation="0.6"
-                  result="blur2"
-                />
+                <feGaussianBlur stdDeviation="0.6" result="coreBlur" />
                 <feMerge>
-                  <feMergeNode in="blur1" />
-                  <feMergeNode in="blur2" />
+                  <feMergeNode in="coreBlur" />
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
             </defs>
-            <g filter="url(#line-glow)">
+            {/* Couche 1 : halo cyan large et diffus */}
+            <g filter="url(#cyan-glow)">
               {countryFeatures.map((f, i) => {
                 const d = pathGen(f);
                 if (!d) return null;
                 return (
                   <path
-                    key={(f.id as string | number | undefined) ?? i}
+                    key={`halo-${(f.id as string | number | undefined) ?? i}`}
                     d={d}
-                    fill="rgba(120,180,255,0.03)"
-                    stroke="rgba(235,245,255,0.92)"
+                    fill="none"
+                    stroke="#2fd9ff"
+                    strokeWidth={strokeWidth + 1.2}
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    opacity={0.85}
+                  />
+                );
+              })}
+            </g>
+            {/* Couche 2 : trait principal blanc lumineux */}
+            <g filter="url(#core-glow)">
+              {countryFeatures.map((f, i) => {
+                const d = pathGen(f);
+                if (!d) return null;
+                return (
+                  <path
+                    key={`stroke-${(f.id as string | number | undefined) ?? i}`}
+                    d={d}
+                    fill="rgba(10,30,60,0.35)"
+                    stroke="rgba(220,240,255,0.55)"
                     strokeWidth={strokeWidth}
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                  />
+                );
+              })}
+            </g>
+            {/* Couche 3 : cœur blanc éclatant très fin */}
+            <g>
+              {countryFeatures.map((f, i) => {
+                const d = pathGen(f);
+                if (!d) return null;
+                return (
+                  <path
+                    key={`core-${(f.id as string | number | undefined) ?? i}`}
+                    d={d}
+                    fill="none"
+                    stroke="#ffffff"
+                    strokeWidth={coreWidth}
                     strokeLinejoin="round"
                     strokeLinecap="round"
                   />
@@ -147,7 +194,7 @@ export const EuropeIntro: React.FC = () => {
         style={{
           pointerEvents: "none",
           background:
-            "radial-gradient(ellipse 70% 55% at center, transparent 0%, transparent 38%, rgba(2,5,12,0.55) 75%, rgba(0,0,0,0.92) 100%)",
+            "radial-gradient(ellipse 75% 60% at center, transparent 0%, transparent 45%, rgba(0,0,0,0.75) 85%, #000 100%)",
         }}
       />
 

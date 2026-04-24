@@ -15,7 +15,7 @@ export const DotGrid: React.FC = () => {
             height={46}
             patternUnits="userSpaceOnUse"
           >
-            <circle cx={1} cy={1} r={1} fill="#1b2a3f" opacity={0.55} />
+            <circle cx={1} cy={1} r={1} fill="#1fa8cc" opacity={0.22} />
           </pattern>
           <pattern
             id="linegrid"
@@ -26,9 +26,9 @@ export const DotGrid: React.FC = () => {
             <path
               d="M 230 0 L 0 0 0 230"
               fill="none"
-              stroke="#0f1a2a"
+              stroke="#0d2030"
               strokeWidth={1}
-              opacity={0.7}
+              opacity={0.55}
             />
           </pattern>
         </defs>
