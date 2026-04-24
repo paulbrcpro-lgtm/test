@@ -17,14 +17,26 @@ export const EuropeIntro: React.FC = () => {
   const frame = useCurrentFrame();
   const { width, height, durationInFrames } = useVideoConfig();
 
-  const pushEnd = Math.round(durationInFrames * 0.78);
-  const t = interpolate(frame, [0, pushEnd], [0, 1], {
-    easing: Easing.bezier(0.42, 0, 0.18, 1),
+  // Phase 1 (drift, 0-25%): la caméra flotte à peine, on admire l'Europe
+  // Phase 2 (push, 25-90%): zoom cinématique vers Paris, easing doux
+  const driftEnd = Math.round(durationInFrames * 0.22);
+  const pushEnd = Math.round(durationInFrames * 0.9);
+
+  const drift = interpolate(frame, [0, driftEnd], [0, 1], {
+    easing: Easing.inOut(Easing.quad),
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const push = interpolate(frame, [driftEnd, pushEnd], [0, 1], {
+    easing: Easing.bezier(0.55, 0.05, 0.25, 1),
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  const scale = interpolate(t, [0, 1], [950, 5800]);
+  // Combinaison : la phase drift couvre ~10 % de la course, la phase push les 90 % restants
+  const t = drift * 0.08 + push * 0.92;
+
+  const scale = interpolate(t, [0, 1], [900, 5400]);
   const cx = interpolate(t, [0, 1], [EUROPE_CENTER[0], PARIS[0]]);
   const cy = interpolate(t, [0, 1], [EUROPE_CENTER[1], PARIS[1]]);
 
@@ -36,15 +48,22 @@ export const EuropeIntro: React.FC = () => {
   const pathGen = geoPath(projection);
   const parisPoint = projection(PARIS) ?? [width / 2, height / 2];
 
-  const tiltDeg = interpolate(t, [0, 1], [22, 12]);
+  // Effet 3D biais : inclinaison X marquée, léger swivel Y et micro roulis Z
+  const tiltX = interpolate(t, [0, 1], [34, 16]);
+  const tiltY = interpolate(t, [0, 1], [-14, 5]);
+  const tiltZ = interpolate(t, [0, 1], [-3.5, 0.5]);
+  // Micro-dérive continue pour un rendu "drone"
+  const orbitY = Math.sin(frame / 70) * 1.8;
+  const orbitX = Math.cos(frame / 90) * 0.9;
+
   const strokeWidth = interpolate(t, [0, 1], [1.0, 0.75]);
 
-  const introFade = interpolate(frame, [0, 18], [0, 1], {
+  const introFade = interpolate(frame, [0, 22], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  const appearFrame = Math.round(durationInFrames * 0.62);
+  const appearFrame = Math.round(durationInFrames * 0.7);
 
   return (
     <AbsoluteFill
@@ -57,8 +76,8 @@ export const EuropeIntro: React.FC = () => {
 
       <AbsoluteFill
         style={{
-          perspective: "2600px",
-          perspectiveOrigin: "50% 48%",
+          perspective: "1900px",
+          perspectiveOrigin: "50% 46%",
           opacity: introFade,
         }}
       >
@@ -67,7 +86,7 @@ export const EuropeIntro: React.FC = () => {
             position: "absolute",
             inset: 0,
             transformStyle: "preserve-3d",
-            transform: `rotateX(${tiltDeg}deg)`,
+            transform: `rotateX(${tiltX + orbitX}deg) rotateY(${tiltY + orbitY}deg) rotateZ(${tiltZ}deg)`,
           }}
         >
           <svg
